@@ -1,9 +1,12 @@
 import streamlit as st
 
+
 def apply_style():
     st.markdown("""
     <style>
-    /* === Hide Streamlit default === */
+    /* ========================================================= */
+    /* === HIDE STREAMLIT DEFAULT === */
+    /* ========================================================= */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
@@ -11,12 +14,16 @@ def apply_style():
     [data-testid="stToolbar"] {visibility: hidden;}
     [data-testid="stDecoration"] {display: none;}
 
-    /* === Main background — hint cream soft === */
+    /* ========================================================= */
+    /* === MAIN BACKGROUND === */
+    /* ========================================================= */
     .stApp {
         background-color: #faf7f2;
     }
 
-    /* === Sidebar — hint brown soft === */
+    /* ========================================================= */
+    /* === SIDEBAR === */
+    /* ========================================================= */
     [data-testid="stSidebar"] {
         background-color: #f2ebe0;
         border-right: 1px solid #e8dcc7;
@@ -35,7 +42,7 @@ def apply_style():
         border: 1px solid #d6d3d1;
     }
 
-    /* === SIDEBAR BUTTONS — text putih jelas === */
+    /* === SIDEBAR BUTTONS === */
     [data-testid="stSidebar"] .stButton > button,
     [data-testid="stSidebar"] .stButton > button[kind="primary"],
     [data-testid="stSidebar"] .stButton > button[kind="secondary"],
@@ -76,7 +83,7 @@ def apply_style():
         color: #44403c !important;
     }
 
-    /* === SIDEBAR NAVIGATION — button style === */
+    /* === SIDEBAR NAVIGATION === */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem;
         padding-bottom: 1rem;
@@ -127,7 +134,69 @@ def apply_style():
         font-weight: 700 !important;
     }
 
-    /* === Titles === */
+    /* ========================================================= */
+    /* === ADMIN NAVIGATION BUTTONS (di atas page) === */
+    /* ========================================================= */
+
+    /* Button tak aktif */
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"] {
+        background-color: #ffffff !important;
+        border: 1px solid #e8dcc7 !important;
+        color: #57534e !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        border-radius: 10px !important;
+        padding: 0.55rem 0.5rem !important;
+        transition: all 0.15s ease !important;
+        box-shadow: 0 1px 2px rgba(120, 53, 15, 0.04) !important;
+    }
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"]:hover {
+        background-color: #f2ebe0 !important;
+        border-color: #d6c4a3 !important;
+        color: #78350f !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 3px 8px rgba(120, 53, 15, 0.12) !important;
+    }
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"] p,
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"] span,
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"] * {
+        color: #57534e !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"]:hover p,
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"]:hover span,
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"]:hover * {
+        color: #78350f !important;
+    }
+
+    /* Button aktif (primary) */
+    div[data-testid="stHorizontalBlock"] button[kind="primary"] {
+        background-color: #78350f !important;
+        border: 1px solid #78350f !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        border-radius: 10px !important;
+        padding: 0.55rem 0.5rem !important;
+        box-shadow: 0 3px 8px rgba(120, 53, 15, 0.2) !important;
+        transition: all 0.15s ease !important;
+    }
+    div[data-testid="stHorizontalBlock"] button[kind="primary"]:hover {
+        background-color: #92400e !important;
+        border-color: #92400e !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 10px rgba(120, 53, 15, 0.3) !important;
+    }
+    div[data-testid="stHorizontalBlock"] button[kind="primary"] p,
+    div[data-testid="stHorizontalBlock"] button[kind="primary"] span,
+    div[data-testid="stHorizontalBlock"] button[kind="primary"] * {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+
+    /* ========================================================= */
+    /* === TITLES === */
+    /* ========================================================= */
     h1 {
         font-weight: 600;
         color: #44403c;
@@ -148,7 +217,9 @@ def apply_style():
         font-size: 1rem;
     }
 
-    /* === Metric cards — soft with hover === */
+    /* ========================================================= */
+    /* === METRIC CARDS === */
+    /* ========================================================= */
     [data-testid="stMetric"] {
         background-color: #ffffff;
         padding: 1.25rem;
@@ -173,7 +244,9 @@ def apply_style():
         font-weight: 600;
     }
 
-    /* === Buttons (main area) === */
+    /* ========================================================= */
+    /* === BUTTONS (MAIN AREA) === */
+    /* ========================================================= */
     .stButton > button {
         border-radius: 8px;
         font-weight: 500;
@@ -196,7 +269,7 @@ def apply_style():
         box-shadow: none;
     }
 
-    /* === PRIMARY button (main area) — override red === */
+    /* === PRIMARY BUTTON === */
     .stButton > button[kind="primary"],
     .stFormSubmitButton > button,
     button[kind="primaryFormSubmit"],
@@ -231,7 +304,9 @@ def apply_style():
         box-shadow: 0 4px 10px rgba(120, 53, 15, 0.25);
     }
 
-    /* === LINK BUTTON (st.link_button) — override red to brown === */
+    /* ========================================================= */
+    /* === LINK BUTTON === */
+    /* ========================================================= */
     [data-testid="stLinkButton"] > a,
     a[data-testid="stLinkButton"],
     .stLinkButton > a,
@@ -266,7 +341,9 @@ def apply_style():
         text-decoration: none !important;
     }
 
-    /* === DataFrame === */
+    /* ========================================================= */
+    /* === DATAFRAME === */
+    /* ========================================================= */
     [data-testid="stDataFrame"] {
         border: 1px solid #f0e6d6;
         border-radius: 12px;
@@ -277,7 +354,9 @@ def apply_style():
         box-shadow: 0 2px 8px rgba(120, 53, 15, 0.06);
     }
 
-    /* === Text inputs === */
+    /* ========================================================= */
+    /* === TEXT INPUTS === */
+    /* ========================================================= */
     .stTextInput > div > div > input,
     .stTextArea > div > div > textarea {
         border-radius: 8px;
@@ -292,7 +371,9 @@ def apply_style():
         box-shadow: 0 0 0 2px #f0e6d6;
     }
 
-    /* === Forms === */
+    /* ========================================================= */
+    /* === FORMS === */
+    /* ========================================================= */
     [data-testid="stForm"] {
         border: 1px solid #f0e6d6;
         border-radius: 12px;
@@ -301,7 +382,9 @@ def apply_style():
         transition: box-shadow 0.2s ease;
     }
 
-    /* === Expander === */
+    /* ========================================================= */
+    /* === EXPANDER === */
+    /* ========================================================= */
     [data-testid="stExpander"] {
         border: 1px solid #f0e6d6;
         border-radius: 12px;
@@ -312,36 +395,48 @@ def apply_style():
         box-shadow: 0 2px 8px rgba(120, 53, 15, 0.06);
     }
 
-    /* === Divider === */
+    /* ========================================================= */
+    /* === DIVIDER === */
+    /* ========================================================= */
     hr {
         margin: 2rem 0;
         border: none;
         border-top: 1px solid #f0e6d6;
     }
 
-    /* === Alerts — soft === */
+    /* ========================================================= */
+    /* === ALERTS === */
+    /* ========================================================= */
     [data-testid="stAlert"] {
         border-radius: 12px;
         border-width: 1px;
     }
 
-    /* === Selectbox === */
+    /* ========================================================= */
+    /* === SELECTBOX === */
+    /* ========================================================= */
     .stSelectbox > div > div {
         border-radius: 8px;
         border: 1px solid #d6d3d1;
     }
 
-    /* === Checkbox === */
+    /* ========================================================= */
+    /* === CHECKBOX === */
+    /* ========================================================= */
     [data-testid="stCheckbox"] label span {
         color: #44403c !important;
     }
 
-    /* === Radio buttons === */
+    /* ========================================================= */
+    /* === RADIO === */
+    /* ========================================================= */
     [data-testid="stRadio"] label span {
         color: #44403c !important;
     }
 
-    /* === File uploader === */
+    /* ========================================================= */
+    /* === FILE UPLOADER === */
+    /* ========================================================= */
     [data-testid="stFileUploader"] {
         border-radius: 12px;
     }
@@ -355,7 +450,9 @@ def apply_style():
         font-weight: 600 !important;
     }
 
-    /* === Progress bar — brown === */
+    /* ========================================================= */
+    /* === PROGRESS BAR === */
+    /* ========================================================= */
     .stProgress > div > div > div > div {
         background-color: #78350f !important;
     }
