@@ -195,6 +195,74 @@ def apply_style():
     }
 
     /* ========================================================= */
+    /* === MAIN AREA — TEXT COLOR (FIX WHITE-ON-WHITE) === */
+    /* ========================================================= */
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    section.main,
+    .main {
+        color: #44403c !important;
+        background-color: #faf7f2 !important;
+    }
+
+    /* Semua paragraph, span, label dalam main area */
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stAppViewContainer"] span,
+    [data-testid="stAppViewContainer"] label,
+    [data-testid="stAppViewContainer"] li,
+    [data-testid="stMain"] p,
+    [data-testid="stMain"] span,
+    [data-testid="stMain"] label {
+        color: #44403c !important;
+    }
+
+    /* Heading dalam main area */
+    [data-testid="stAppViewContainer"] h1,
+    [data-testid="stAppViewContainer"] h2,
+    [data-testid="stAppViewContainer"] h3,
+    [data-testid="stAppViewContainer"] h4 {
+        color: #292524 !important;
+    }
+
+    /* Markdown text */
+    [data-testid="stAppViewContainer"] .stMarkdown,
+    [data-testid="stAppViewContainer"] .stMarkdown p,
+    [data-testid="stAppViewContainer"] .stMarkdown span {
+        color: #44403c !important;
+    }
+
+    /* st.write() output dan caption */
+    [data-testid="stAppViewContainer"] [data-testid="stText"],
+    [data-testid="stAppViewContainer"] [data-testid="stCaptionContainer"] {
+        color: #44403c !important;
+    }
+
+    /* Alert boxes (info/success/warning/error) */
+    [data-testid="stAppViewContainer"] [data-testid="stAlert"] p,
+    [data-testid="stAppViewContainer"] [data-testid="stAlert"] span,
+    [data-testid="stAppViewContainer"] [data-testid="stAlert"] div {
+        color: #44403c !important;
+    }
+
+    /* Text input di main area */
+    [data-testid="stAppViewContainer"] input,
+    [data-testid="stAppViewContainer"] textarea {
+        color: #44403c !important;
+    }
+
+    /* Placeholder */
+    [data-testid="stAppViewContainer"] input::placeholder,
+    [data-testid="stAppViewContainer"] textarea::placeholder {
+        color: #a8a29e !important;
+    }
+
+    /* Code block */
+    [data-testid="stAppViewContainer"] code,
+    [data-testid="stAppViewContainer"] pre {
+        color: #44403c !important;
+    }
+
+    /* ========================================================= */
     /* === TITLES === */
     /* ========================================================= */
     h1 {
