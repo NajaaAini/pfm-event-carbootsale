@@ -44,7 +44,6 @@ PROOF_COL = "Upload Bukti Bayaran"
 
 VALID_STATUSES = ["Pending", "Approved", "Rejected", "Cancelled"]
 
-# Kategori rasmi
 CAT_CARBOOT = "Car Boot Sales"
 CAT_FB = "F&B"
 
@@ -200,6 +199,7 @@ def confirm_approve_dialog(plate, vendor_name):
     with col1:
         if st.button("Ya, Luluskan", type="primary", use_container_width=True):
             df.loc[df[COL_PLATE] == plate, "Status"] = "Approved"
+            df.loc[df[COL_PLATE] == plate, "Notes"] = ""   # ← clear reason lama
             conn.update(data=df)
             log_action(conn, ADMIN_NAME, "APPROVE", plate, f"Lulus: {vendor_name}")
             st.toast(f"✅ {plate} telah diluluskan", icon="✅")
@@ -213,14 +213,38 @@ def confirm_approve_dialog(plate, vendor_name):
 def confirm_reject_dialog(plate, vendor_name):
     st.write("Anda akan **menolak** permohonan ini:")
     st.markdown(f"**No. Plate:** `{plate}`  \n**Nama:** {vendor_name}")
+
+    # Ambil sebab reject sedia ada (kalau ada)
+    existing_row = df[df[COL_PLATE] == plate]
+    existing_reason = ""
+    if not existing_row.empty:
+        existing_val = existing_row.iloc[0].get("Notes", "")
+        if pd.notna(existing_val) and str(existing_val).strip():
+            existing_reason = str(existing_val).strip()
+
+    reject_reason = st.text_area(
+        "Sebab Penolakan (vendor akan nampak di halaman semak status)",
+        value=existing_reason,
+        placeholder="Contoh: Slot kategori anda telah penuh. Sila hubungi admin untuk maklumat lanjut.",
+        height=120,
+        key=f"reject_reason_{plate}",
+    )
+
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Ya, Tolak", type="primary", use_container_width=True):
-            df.loc[df[COL_PLATE] == plate, "Status"] = "Rejected"
-            conn.update(data=df)
-            log_action(conn, ADMIN_NAME, "REJECT", plate, f"Tolak: {vendor_name}")
-            st.toast(f"❌ {plate} telah ditolak", icon="❌")
-            st.rerun()
+            if not reject_reason.strip():
+                st.warning("⚠️ Sila masukkan sebab penolakan supaya vendor tahu kenapa.")
+            else:
+                df.loc[df[COL_PLATE] == plate, "Status"] = "Rejected"
+                df.loc[df[COL_PLATE] == plate, "Notes"] = reject_reason.strip()
+                conn.update(data=df)
+                log_action(
+                    conn, ADMIN_NAME, "REJECT", plate,
+                    f"Tolak: {vendor_name} — Sebab: {reject_reason[:100]}"
+                )
+                st.toast(f"❌ {plate} telah ditolak", icon="❌")
+                st.rerun()
     with col2:
         if st.button("Batal", use_container_width=True):
             st.rerun()
@@ -255,7 +279,6 @@ def edit_vendor_dialog(plate):
         help="Boleh tulis 0123456789 atau 012-345 6789. Sistem akan normalize.",
     )
 
-    # Tambah pilihan Arts & Crafts / Toys
     type_options = ["Car Boot Sales", "F&B", "Arts & Crafts / Toys"]
     current_type = str(vendor.get(COL_TYPE, "Car Boot Sales"))
     type_index = type_options.index(current_type) if current_type in type_options else 0
@@ -324,14 +347,12 @@ if show_section("1️⃣ Papan Pemantauan Kuota"):
     total_committed = cb_committed + fb_committed + ot_committed
     total_limit = CAR_BOOT_LIMIT + FB_OVERALL_LIMIT + OTHERS_LIMIT
 
-    # Row 1: 4 metrics
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Car Boot", f"{cb_committed} / {CAR_BOOT_LIMIT}")
     c2.metric("F&B", f"{fb_committed} / {FB_OVERALL_LIMIT}")
     c3.metric("Others", f"{ot_committed} / {OTHERS_LIMIT}")
     c4.metric("TOTAL", f"{total_committed} / {total_limit}")
 
-    # Row 2: Progress bars
     pc1, pc2, pc3, pc4 = st.columns(4)
     with pc1:
         st.markdown("**Car Boot**")
@@ -568,7 +589,6 @@ if show_section("3️⃣ Permohonan Menunggu"):
                 v_type = vendor[COL_TYPE]
                 v_cat = vendor.get(COL_CAT, "")
 
-                # Info kuota ikut kategori
                 if v_type == CAT_FB:
                     a = df[(df[COL_TYPE] == CAT_FB) & (df[COL_CAT] == v_cat) & (df["Status"] == "Approved")].shape[0]
                     p = df[(df[COL_TYPE] == CAT_FB) & (df[COL_CAT] == v_cat) & (df["Status"] == "Pending")].shape[0]
@@ -607,7 +627,6 @@ if show_section("3️⃣ Permohonan Menunggu"):
                             if cb_committed >= CAR_BOOT_LIMIT:
                                 st.error("Car Boot telah penuh."); ok = False
                         else:
-                            # Others
                             if others_committed() >= OTHERS_LIMIT:
                                 st.error("Others telah penuh."); ok = False
 
