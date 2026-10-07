@@ -1,4 +1,19 @@
 import streamlit as st
+
+# ===== DEBUG SEMENTARA =====
+try:
+    st.write("✅ App start OK")
+    if "connections" in st.secrets:
+        gs = st.secrets["connections"].get("gsheets", {})
+        st.write(f"GSHEETS keys: {list(gs.keys())}")
+        st.write(f"Has spreadsheet: {'spreadsheet' in gs}")
+    else:
+        st.write("❌ No 'connections' in secrets")
+except Exception as e:
+    st.error(f"Secrets error: {e}")
+# ===== END DEBUG =====
+
+import streamlit as st
 from style import apply_style
 import base64
 from pathlib import Path
