@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from urllib.parse import quote
 from streamlit_gsheets import GSheetsConnection
 from style import apply_style
 from components import page_header, load_sheet_safe
@@ -16,7 +17,6 @@ COL_TYPE = "Kategori Produk/Product Category"
 COL_CAT = "F&B CATEGORY"
 COL_PLATE = "Plate Number"
 
-# Nama column bukti bayaran dalam Sheet
 PROOF_COL = "Upload Bukti Bayaran"
 
 VALID_STATUSES = ["Pending", "Approved", "Rejected", "Cancelled"]
@@ -229,11 +229,9 @@ if submitted and query:
         proof_url = ""
         folder_url = ""
 
-        # Hanya check kalau status Approved & belum Paid
         if status == "Approved" and not paid:
             payments, pay_err = load_payments()
             if payments is not None and not payments.empty:
-                # Pastikan column wujud
                 if "Plate Number" in payments.columns:
                     matched_pay = payments[
                         payments["Plate Number"].astype(str).str.upper().str.replace(" ", "")
@@ -247,7 +245,6 @@ if submitted and query:
                             pass
                         latest = matched_pay.iloc[0]
                         proof_upload_time = str(latest.get("Timestamp", "") or "")
-                        # FIX: guna PROOF_COL = "Upload Bukti Bayaran"
                         proof_url = str(latest.get(PROOF_COL, "") or "")
                         folder_url = str(latest.get("FolderUrl", "") or "")
 
@@ -286,12 +283,19 @@ if submitted and query:
 
         # ---------- REJECTED ----------
         elif status == "Rejected":
+            # Ambil sebab penolakan dari column Notes
+            reject_reason = ""
+            if pd.notna(row.get("Notes")) and str(row.get("Notes")).strip():
+                reject_reason = str(row.get("Notes")).strip()
+
+            # Kad utama (merah)
             st.markdown("""
             <div style="
                 background-color: #fef2f2;
                 border: 1px solid #fecaca;
                 border-radius: 12px;
                 padding: 1.5rem 1.75rem;
+                margin-bottom: 1rem;
             ">
                 <div style="display: flex;align-items: center;gap: 0.75rem;margin-bottom: 0.75rem;">
                     <div style="
@@ -305,9 +309,66 @@ if submitted and query:
                     </div>
                 </div>
                 <div style="color: #991b1b;font-size: 0.95rem;">
-                    Maaf, permohonan anda tidak dipilih untuk event ini. Hubungi admin untuk maklumat lanjut.
+                    Maaf, permohonan anda tidak dipilih untuk event ini.
                 </div>
             </div>
+            """, unsafe_allow_html=True)
+
+            # Kad sebab penolakan (kalau ada)
+            if reject_reason:
+                # Escape HTML
+                safe_reason = (
+                    reject_reason
+                    .replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                )
+                st.markdown(f"""
+                <div style="
+                    background-color: #ffffff;
+                    border: 1px solid #fecaca;
+                    border-left: 4px solid #dc2626;
+                    border-radius: 8px;
+                    padding: 1.1rem 1.35rem;
+                    margin-bottom: 1rem;
+                ">
+                    <div style="
+                        font-size: 0.78rem;
+                        color: #78716c;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        font-weight: 600;
+                        margin-bottom: 0.5rem;
+                    ">📋 Sebab Penolakan</div>
+                    <div style="
+                        color: #292524;
+                        font-size: 0.95rem;
+                        line-height: 1.6;
+                    ">{safe_reason}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            # Butang WhatsApp
+            wa_number = "601157727459"
+            wa_message = (
+                f"Hi! PFM Car Boot Sale — Saya nak tanya pasal permohonan saya "
+                f"(Plate: {row[COL_PLATE]})."
+            )
+            wa_url = f"https://wa.me/{wa_number}?text={quote(wa_message)}"
+
+            st.markdown(f"""
+            <a href="{wa_url}" target="_blank" style="
+                display: block;
+                background-color: #25D366;
+                color: #ffffff;
+                text-align: center;
+                padding: 0.85rem 1.5rem;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 1rem;
+                margin-top: 0.75rem;
+            ">💬 Hubungi Admin via WhatsApp</a>
             """, unsafe_allow_html=True)
 
         # ---------- CANCELLED ----------
@@ -318,6 +379,7 @@ if submitted and query:
                 border: 1px solid #fecaca;
                 border-radius: 12px;
                 padding: 1.5rem 1.75rem;
+                margin-bottom: 1rem;
             ">
                 <div style="display: flex;align-items: center;gap: 0.75rem;margin-bottom: 0.75rem;">
                     <div style="
@@ -336,12 +398,33 @@ if submitted and query:
             </div>
             """, unsafe_allow_html=True)
 
+            # Butang WhatsApp
+            wa_number = "601157727459"
+            wa_message = (
+                f"Hi! PFM Car Boot Sale — Slot saya telah dibatalkan "
+                f"(Plate: {row[COL_PLATE]}). Boleh saya tahu lanjut?"
+            )
+            wa_url = f"https://wa.me/{wa_number}?text={quote(wa_message)}"
+
+            st.markdown(f"""
+            <a href="{wa_url}" target="_blank" style="
+                display: block;
+                background-color: #25D366;
+                color: #ffffff;
+                text-align: center;
+                padding: 0.85rem 1.5rem;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 1rem;
+                margin-top: 0.75rem;
+            ">💬 Hubungi Admin via WhatsApp</a>
+            """, unsafe_allow_html=True)
+
         # ---------- APPROVED ----------
         elif status == "Approved":
 
-            # ==========================================
             # CASE 1: Approved + BELUM Paid + DAH UPLOAD BUKTI
-            # ==========================================
             if not paid and has_uploaded_proof:
                 st.markdown(f"""
                 <div style="
@@ -374,7 +457,6 @@ if submitted and query:
                     "📌 **Seterusnya:** Sila tunggu pengesahan admin dan jangan lupa untuk join group whatsapp."
                 )
 
-                # Link ke fail & folder (optional)
                 if proof_url or folder_url:
                     with st.expander("📎 Lihat bukti yang dihantar"):
                         if proof_url:
@@ -386,9 +468,7 @@ if submitted and query:
                         if folder_url:
                             st.markdown(f"[📁 Folder Bukti]({folder_url})")
 
-            # ==========================================
             # CASE 2: Approved + BELUM Paid + BELUM UPLOAD
-            # ==========================================
             elif not paid and not has_uploaded_proof:
                 st.markdown("""
                 <div style="
@@ -429,7 +509,6 @@ if submitted and query:
                 </div>
                 """, unsafe_allow_html=True)
 
-                # Butang upload — cuba page_link dulu, fallback ke link_button
                 try:
                     st.page_link(
                         "upload_payment.py",
@@ -463,9 +542,7 @@ if submitted and query:
                             unsafe_allow_html=True,
                         )
 
-            # ==========================================
             # CASE 3: Approved + DAH Paid
-            # ==========================================
             else:
                 st.markdown("""
                 <div style="
@@ -541,10 +618,9 @@ if submitted and query:
                 "Sila hubungi admin untuk maklumat lanjut."
             )
 
-            # Butang WhatsApp
             wa_number = "601157727459"
             wa_message = "Hi! PFM Car Boot Sale November"
-            wa_url = f"https://wa.me/{wa_number}?text={wa_message.replace(' ', '%20').replace('!', '%21')}"
+            wa_url = f"https://wa.me/{wa_number}?text={quote(wa_message)}"
 
             st.markdown(f"""
             <a href="{wa_url}" target="_blank" style="
