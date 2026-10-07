@@ -493,7 +493,7 @@ if show_section("3️⃣ Permohonan Menunggu"):
         with f_col1:
             search_query = st.text_input(
                 "Cari (No. Plate / Nama / Telefon)",
-                placeholder="Contoh: PSC5435 atau Ali",
+                placeholder="Contoh: NNA1806 atau Ali",
                 key="pending_search"
             ).strip()
 
