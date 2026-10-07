@@ -104,8 +104,10 @@ if df is None:
 df["Paid"] = df["Paid"].fillna(False).astype(bool)
 df["Status"] = df["Status"].apply(normalize_status)
 
+# === FIX: Pastikan Notes wujud + dtype string ===
 if "Notes" not in df.columns:
     df["Notes"] = ""
+df["Notes"] = df["Notes"].astype("object").fillna("").astype(str)
 
 # ============================================================
 # LOAD PAYMENTS
@@ -199,7 +201,7 @@ def confirm_approve_dialog(plate, vendor_name):
     with col1:
         if st.button("Ya, Luluskan", type="primary", use_container_width=True):
             df.loc[df[COL_PLATE] == plate, "Status"] = "Approved"
-            df.loc[df[COL_PLATE] == plate, "Notes"] = ""   # ← clear reason lama
+            df.loc[df[COL_PLATE] == plate, "Notes"] = ""
             conn.update(data=df)
             log_action(conn, ADMIN_NAME, "APPROVE", plate, f"Lulus: {vendor_name}")
             st.toast(f"✅ {plate} telah diluluskan", icon="✅")
@@ -214,7 +216,6 @@ def confirm_reject_dialog(plate, vendor_name):
     st.write("Anda akan **menolak** permohonan ini:")
     st.markdown(f"**No. Plate:** `{plate}`  \n**Nama:** {vendor_name}")
 
-    # Ambil sebab reject sedia ada (kalau ada)
     existing_row = df[df[COL_PLATE] == plate]
     existing_reason = ""
     if not existing_row.empty:
